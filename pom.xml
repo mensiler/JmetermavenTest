@@ -1,0 +1,102 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.jinhongtao</groupId>
+  <artifactId>jmeter-maven</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>jar</packaging>
+
+  <name>jmeter-maven</name>
+  <url>http://maven.apache.org</url>
+
+  <properties>
+    <lazerycode.jmeter.version>2.3.0</lazerycode.jmeter.version>
+    <apache.maven.plugin.version>2.3</apache.maven.plugin.version>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <enforcer.skip>true</enforcer.skip>
+    <createjmx.maven.plugin.version>1.0.1-SNAPSHOT</createjmx.maven.plugin.version>
+  </properties>
+
+
+  <dependencies>
+    <dependency>
+      <groupId>com.lazerycode.jmeter</groupId>
+      <artifactId>jmeter-maven-plugin</artifactId>
+      <version>${lazerycode.jmeter.version}</version>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>${apache.maven.plugin.version}</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>test-jar</goal>
+            </goals>
+            <configuration>
+              <includes>
+                <include>**/*</include>
+              </includes>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-test-jmeter-jar</id>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <copy todir="./target/jmeter/lib/ext">
+                  <fileset dir="./target">
+                    <include name="*.jar" />
+                  </fileset>
+                </copy>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.lazerycode.jmeter</groupId>
+        <artifactId>jmeter-maven-plugin</artifactId>
+        <version>${lazerycode.jmeter.version}</version>
+        <executions>
+          <execution>
+            <id>jmeter-tests</id>
+            <phase>verify</phase>
+            <goals>
+              <goal>jmeter</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <suppressJMeterOutput>false</suppressJMeterOutput>
+          <propertiesJMeter>
+            <log_level.jmeter.junit>INFO</log_level.jmeter.junit>
+          </propertiesJMeter>
+          <resultsFileNameDateFormat>yyyyMMddHHmmss</resultsFileNameDateFormat>
+          <resultsFileFormat>csv</resultsFileFormat>
+          <ignoreResultFailures>true</ignoreResultFailures>
+          <testFilesIncluded>
+            <included>test.jmx</included>
+          </testFilesIncluded>
+        </configuration>
+      </plugin>
+
+    </plugins>
+  </build>
+
+
+</project>
